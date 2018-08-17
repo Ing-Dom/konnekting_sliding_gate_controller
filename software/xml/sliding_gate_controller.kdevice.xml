@@ -1,0 +1,1155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<KonnektingDevice xmlns="http://konnekting.de/xml/KonnektingDevice/v0">
+    <Device ManufacturerId="7337" DeviceId="10" Revision="0">
+        <ManufacturerName>SirSydom KNX Labs</ManufacturerName>
+        <DeviceName>Sliding Gate Controller</DeviceName>
+		
+		<Parameters>
+			<ParameterGroup Name="General" Id="0">
+				<Parameter Id="0" IdName="close_time">
+					<Description>Auto Close Time after contact [s] (0 = no auto close)</Description>
+					<Value Type="uint8" Default="0"/>
+				</Parameter>
+				<Parameter Id="1" IdName="close_time">
+					<Description>Auto Close Time without contact [min] (0 = no auto close)</Description>
+					<Value Type="uint8" Default="0"/>
+				</Parameter>
+			</ParameterGroup>
+		</Parameters>
+		
+        <CommObjects>
+			<CommObject Id="0" IdName="cmd_close">
+                <Name>Close</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="0" IdName="cmd_open">
+                <Name>Open</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="0" IdName="cmd_leave_open">
+                <Name>Open (Leave Open)</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="0" IdName="cmd_partly_open">
+                <Name>Open (Partly)</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="0" IdName="cmd_stop">
+                <Name>Stop</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="0" IdName="cmd_position">
+                <Name>Position</Name>
+                <Function>Command</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			
+			
+			<CommObject Id="8" IdName="stat_open_closed">
+                <Name>Open/Closed</Name>
+                <Function>Status</Function>
+                <DataPointType>1.009</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="9" IdName="stat_closed">
+                <Name>Channel B</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="10" IdName="ch_C_sw">
+                <Name>Channel C</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="11" IdName="ch_C_dim">
+                <Name>Channel C</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="12" IdName="ch_C_dimrel">
+                <Name>Channel C</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="13" IdName="ch_C_stat_sw">
+                <Name>Channel C</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="14" IdName="ch_C_stat_dim">
+                <Name>Channel C</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="15" IdName="ch_D_sw">
+                <Name>Channel D</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="16" IdName="ch_D_dim">
+                <Name>Channel D</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="17" IdName="ch_D_dimrel">
+                <Name>Channel D</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="18" IdName="ch_D_stat_sw">
+                <Name>Channel D</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="19" IdName="ch_D_stat_dim">
+                <Name>Channel D</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="20" IdName="ch_E_sw">
+                <Name>Channel E</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="21" IdName="ch_E_dim">
+                <Name>Channel E</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="22" IdName="ch_E_dimrel">
+                <Name>Channel E</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="23" IdName="ch_E_stat_sw">
+                <Name>Channel E</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="24" IdName="ch_E_stat_dim">
+                <Name>Channel E</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="25" IdName="ch_F_sw">
+                <Name>Channel F</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="26" IdName="ch_F_dim">
+                <Name>Channel F</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="27" IdName="ch_F_dimrel">
+                <Name>Channel F</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="28" IdName="ch_F_stat_sw">
+                <Name>Channel F</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="29" IdName="ch_F_stat_dim">
+                <Name>Channel F</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="30" IdName="ch_G_sw">
+                <Name>Channel G</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="31" IdName="ch_G_dim">
+                <Name>Channel G</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="32" IdName="ch_G_dimrel">
+                <Name>Channel G</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="33" IdName="ch_G_stat_sw">
+                <Name>Channel G</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="34" IdName="ch_G_stat_dim">
+                <Name>Channel G</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="35" IdName="ch_H_sw">
+                <Name>Channel H</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="36" IdName="ch_H_dim">
+                <Name>Channel H</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="37" IdName="ch_H_dimrel">
+                <Name>Channel H</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="38" IdName="ch_H_stat_sw">
+                <Name>Channel H</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="39" IdName="ch_H_stat_dim">
+                <Name>Channel H</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="40" IdName="ch_I_sw">
+                <Name>Channel I</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="41" IdName="ch_I_dim">
+                <Name>Channel I</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="42" IdName="ch_I_dimrel">
+                <Name>Channel I</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="43" IdName="ch_I_stat_sw">
+                <Name>Channel I</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="44" IdName="ch_I_stat_dim">
+                <Name>Channel I</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="45" IdName="ch_J_sw">
+                <Name>Channel J</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="46" IdName="ch_J_dim">
+                <Name>Channel J</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="47" IdName="ch_J_dimrel">
+                <Name>Channel J</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="48" IdName="ch_J_stat_sw">
+                <Name>Channel J</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="49" IdName="ch_J_stat_dim">
+                <Name>Channel J</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="50" IdName="ch_K_sw">
+                <Name>Channel K</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="51" IdName="ch_K_dim">
+                <Name>Channel K</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="52" IdName="ch_K_dimrel">
+                <Name>Channel K</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="53" IdName="ch_K_stat_sw">
+                <Name>Channel K</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="54" IdName="ch_K_stat_dim">
+                <Name>Channel K</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="55" IdName="ch_L_sw">
+                <Name>Channel L</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="56" IdName="ch_L_dim">
+                <Name>Channel L</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="57" IdName="ch_L_dimrel">
+                <Name>Channel L</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="58" IdName="ch_L_stat_sw">
+                <Name>Channel L</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="59" IdName="ch_L_stat_dim">
+                <Name>Channel L</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="60" IdName="ch_M_sw">
+                <Name>Channel M</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="61" IdName="ch_M_dim">
+                <Name>Channel M</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="62" IdName="ch_M_dimrel">
+                <Name>Channel M</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="63" IdName="ch_M_stat_sw">
+                <Name>Channel M</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="64" IdName="ch_M_stat_dim">
+                <Name>Channel M</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="65" IdName="ch_N_sw">
+                <Name>Channel N</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="66" IdName="ch_N_dim">
+                <Name>Channel N</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="67" IdName="ch_N_dimrel">
+                <Name>Channel N</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="68" IdName="ch_N_stat_sw">
+                <Name>Channel N</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="69" IdName="ch_N_stat_dim">
+                <Name>Channel N</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="70" IdName="ch_O_sw">
+                <Name>Channel O</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="71" IdName="ch_O_dim">
+                <Name>Channel O</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="72" IdName="ch_O_dimrel">
+                <Name>Channel O</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="73" IdName="ch_O_stat_sw">
+                <Name>Channel O</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="74" IdName="ch_O_stat_dim">
+                <Name>Channel O</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="75" IdName="ch_P_sw">
+                <Name>Channel P</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="76" IdName="ch_P_dim">
+                <Name>Channel P</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="77" IdName="ch_P_dimrel">
+                <Name>Channel P</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="78" IdName="ch_P_stat_sw">
+                <Name>Channel P</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="79" IdName="ch_P_stat_dim">
+                <Name>Channel P</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="80" IdName="ch_Q_sw">
+                <Name>Channel Q</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="81" IdName="ch_Q_dim">
+                <Name>Channel Q</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="82" IdName="ch_Q_dimrel">
+                <Name>Channel Q</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="83" IdName="ch_Q_stat_sw">
+                <Name>Channel Q</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="84" IdName="ch_Q_stat_dim">
+                <Name>Channel Q</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="85" IdName="ch_R_sw">
+                <Name>Channel R</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="86" IdName="ch_R_dim">
+                <Name>Channel R</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="87" IdName="ch_R_dimrel">
+                <Name>Channel R</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="88" IdName="ch_R_stat_sw">
+                <Name>Channel R</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="89" IdName="ch_R_stat_dim">
+                <Name>Channel R</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="90" IdName="ch_S_sw">
+                <Name>Channel S</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="91" IdName="ch_S_dim">
+                <Name>Channel S</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="92" IdName="ch_S_dimrel">
+                <Name>Channel S</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="93" IdName="ch_S_stat_sw">
+                <Name>Channel S</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="94" IdName="ch_S_stat_dim">
+                <Name>Channel S</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="95" IdName="ch_T_sw">
+                <Name>Channel T</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="96" IdName="ch_T_dim">
+                <Name>Channel T</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="97" IdName="ch_T_dimrel">
+                <Name>Channel T</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="98" IdName="ch_T_stat_sw">
+                <Name>Channel T</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="99" IdName="ch_T_stat_dim">
+                <Name>Channel T</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="100" IdName="ch_U_sw">
+                <Name>Channel U</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="101" IdName="ch_U_dim">
+                <Name>Channel U</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="102" IdName="ch_U_dimrel">
+                <Name>Channel U</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="103" IdName="ch_U_stat_sw">
+                <Name>Channel U</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="104" IdName="ch_U_stat_dim">
+                <Name>Channel U</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="105" IdName="ch_V_sw">
+                <Name>Channel V</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="106" IdName="ch_V_dim">
+                <Name>Channel V</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="107" IdName="ch_V_dimrel">
+                <Name>Channel V</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="108" IdName="ch_V_stat_sw">
+                <Name>Channel V</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="109" IdName="ch_V_stat_dim">
+                <Name>Channel V</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="110" IdName="ch_W_sw">
+                <Name>Channel W</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="111" IdName="ch_W_dim">
+                <Name>Channel W</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="112" IdName="ch_W_dimrel">
+                <Name>Channel W</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="113" IdName="ch_W_stat_sw">
+                <Name>Channel W</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="114" IdName="ch_W_stat_dim">
+                <Name>Channel W</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="115" IdName="ch_X_sw">
+                <Name>Channel X</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="116" IdName="ch_X_dim">
+                <Name>Channel X</Name>
+                <Function>Dimming Absolute</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="117" IdName="ch_X_dimrel">
+                <Name>Channel X</Name>
+                <Function>Dimming Relative</Function>
+                <DataPointType>3.007</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="118" IdName="ch_X_stat_sw">
+                <Name>Channel X</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="119" IdName="ch_X_stat_dim">
+                <Name>Channel X</Name>
+                <Function>Status Dimming Value</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="120" IdName="ch_ABC_sw">
+                <Name>Channel ABC</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="121" IdName="ch_ABC_dim">
+                <Name>Channel ABC</Name>
+                <Function>Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="122" IdName="ch_ABC_stat_sw">
+                <Name>Channel ABC</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="123" IdName="ch_ABC_stat_dim">
+                <Name>Channel ABC</Name>
+                <Function>Status Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="124" IdName="ch_EFG_sw">
+                <Name>Channel EFG</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="125" IdName="ch_EFG_dim">
+                <Name>Channel EFG</Name>
+                <Function>Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="126" IdName="ch_EFG_stat_sw">
+                <Name>Channel EFG</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="127" IdName="ch_EFG_stat_dim">
+                <Name>Channel EFG</Name>
+                <Function>Status Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="128" IdName="ch_IJK_sw">
+                <Name>Channel IJK</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="129" IdName="ch_IJK_dim">
+                <Name>Channel IJK</Name>
+                <Function>Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="130" IdName="ch_IJK_stat_sw">
+                <Name>Channel IJK</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="131" IdName="ch_IJK_stat_dim">
+                <Name>Channel IJK</Name>
+                <Function>Status Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="132" IdName="ch_MNO_sw">
+                <Name>Channel MNO</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="133" IdName="ch_MNO_dim">
+                <Name>Channel MNO</Name>
+                <Function>Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="134" IdName="ch_MNO_stat_sw">
+                <Name>Channel MNO</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="135" IdName="ch_MNO_stat_dim">
+                <Name>Channel MNO</Name>
+                <Function>Status Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="136" IdName="ch_QRS_sw">
+                <Name>Channel QRS</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="137" IdName="ch_QRS_dim">
+                <Name>Channel QRS</Name>
+                <Function>Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="138" IdName="ch_QRS_stat_sw">
+                <Name>Channel QRS</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="139" IdName="ch_QRS_stat_dim">
+                <Name>Channel QRS</Name>
+                <Function>Status Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="140" IdName="ch_UVW_sw">
+                <Name>Channel UVW</Name>
+                <Function>Switch</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="141" IdName="ch_UVW_dim">
+                <Name>Channel UVW</Name>
+                <Function>Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+
+			<CommObject Id="142" IdName="ch_UVW_stat_sw">
+                <Name>Channel UVW</Name>
+                <Function>Status On/Off</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="143" IdName="ch_UVW_stat_dim">
+                <Name>Channel UVW</Name>
+                <Function>Status Color</Function>
+                <DataPointType>232.600</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="144" IdName="gen_casetemp">
+                <Name>Global</Name>
+                <Function>Case temp</Function>
+                <DataPointType>9.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			<CommObject Id="145" IdName="gen_temp_alarm">
+                <Name>Global</Name>
+                <Function>Temp alarm</Function>
+                <DataPointType>1.005</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+		</CommObjects>
+		<Dependencies>
+			<ParameterGroupDependency ParamGroupId="1" Test="eq" TestParamId="0" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="2" Test="eq" TestParamId="0" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="3" Test="eq" TestParamId="0" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="25" Test="eq" TestParamId="0" TestValue="01"/>
+			
+			<ParameterGroupDependency ParamGroupId="5" Test="eq" TestParamId="1" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="6" Test="eq" TestParamId="1" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="7" Test="eq" TestParamId="1" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="26" Test="eq" TestParamId="1" TestValue="01"/>
+			
+			<ParameterGroupDependency ParamGroupId="9" Test="eq" TestParamId="2" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="10" Test="eq" TestParamId="2" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="11" Test="eq" TestParamId="2" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="27" Test="eq" TestParamId="2" TestValue="01"/>
+			
+			<ParameterGroupDependency ParamGroupId="13" Test="eq" TestParamId="3" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="14" Test="eq" TestParamId="3" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="15" Test="eq" TestParamId="3" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="28" Test="eq" TestParamId="3" TestValue="01"/>
+			
+			<ParameterGroupDependency ParamGroupId="17" Test="eq" TestParamId="4" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="18" Test="eq" TestParamId="4" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="19" Test="eq" TestParamId="4" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="29" Test="eq" TestParamId="4" TestValue="01"/>
+			
+			<ParameterGroupDependency ParamGroupId="21" Test="eq" TestParamId="5" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="22" Test="eq" TestParamId="5" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="23" Test="eq" TestParamId="5" TestValue="00"/>
+			<ParameterGroupDependency ParamGroupId="30" Test="eq" TestParamId="5" TestValue="01"/>
+			
+			<CommObjectDependency CommObjId="0" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="1" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="2" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="3" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="4" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="5" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="6" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="7" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="8" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="9" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="10" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="11" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="12" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="13" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="14" Test="eq" TestParamId="0" TestValue="00"/>
+			<CommObjectDependency CommObjId="120" Test="eq" TestParamId="0" TestValue="01"/>
+			<CommObjectDependency CommObjId="121" Test="eq" TestParamId="0" TestValue="01"/>
+			<CommObjectDependency CommObjId="122" Test="eq" TestParamId="0" TestValue="01"/>
+			<CommObjectDependency CommObjId="123" Test="eq" TestParamId="0" TestValue="01"/>
+			
+			<CommObjectDependency CommObjId="20" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="21" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="22" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="23" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="24" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="25" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="26" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="27" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="28" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="29" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="30" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="31" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="32" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="33" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="34" Test="eq" TestParamId="1" TestValue="00"/>
+			<CommObjectDependency CommObjId="124" Test="eq" TestParamId="1" TestValue="01"/>
+			<CommObjectDependency CommObjId="125" Test="eq" TestParamId="1" TestValue="01"/>
+			<CommObjectDependency CommObjId="126" Test="eq" TestParamId="1" TestValue="01"/>
+			<CommObjectDependency CommObjId="127" Test="eq" TestParamId="1" TestValue="01"/>
+			
+			<CommObjectDependency CommObjId="40" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="41" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="42" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="43" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="44" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="45" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="46" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="47" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="48" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="49" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="50" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="51" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="52" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="53" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="54" Test="eq" TestParamId="2" TestValue="00"/>
+			<CommObjectDependency CommObjId="128" Test="eq" TestParamId="2" TestValue="01"/>
+			<CommObjectDependency CommObjId="129" Test="eq" TestParamId="2" TestValue="01"/>
+			<CommObjectDependency CommObjId="130" Test="eq" TestParamId="2" TestValue="01"/>
+			<CommObjectDependency CommObjId="131" Test="eq" TestParamId="2" TestValue="01"/>
+			
+			<CommObjectDependency CommObjId="60" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="61" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="62" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="63" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="64" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="65" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="66" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="67" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="68" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="69" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="70" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="71" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="72" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="73" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="74" Test="eq" TestParamId="3" TestValue="00"/>
+			<CommObjectDependency CommObjId="132" Test="eq" TestParamId="3" TestValue="01"/>
+			<CommObjectDependency CommObjId="133" Test="eq" TestParamId="3" TestValue="01"/>
+			<CommObjectDependency CommObjId="134" Test="eq" TestParamId="3" TestValue="01"/>
+			<CommObjectDependency CommObjId="135" Test="eq" TestParamId="3" TestValue="01"/>
+			
+			<CommObjectDependency CommObjId="80" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="81" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="82" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="83" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="84" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="85" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="86" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="87" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="88" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="89" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="90" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="91" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="92" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="93" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="94" Test="eq" TestParamId="4" TestValue="00"/>
+			<CommObjectDependency CommObjId="136" Test="eq" TestParamId="4" TestValue="01"/>
+			<CommObjectDependency CommObjId="137" Test="eq" TestParamId="4" TestValue="01"/>
+			<CommObjectDependency CommObjId="138" Test="eq" TestParamId="4" TestValue="01"/>
+			<CommObjectDependency CommObjId="139" Test="eq" TestParamId="4" TestValue="01"/>
+			
+			<CommObjectDependency CommObjId="100" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="101" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="102" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="103" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="104" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="105" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="106" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="107" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="108" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="109" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="110" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="111" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="112" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="113" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="114" Test="eq" TestParamId="5" TestValue="00"/>
+			<CommObjectDependency CommObjId="140" Test="eq" TestParamId="5" TestValue="01"/>
+			<CommObjectDependency CommObjId="141" Test="eq" TestParamId="5" TestValue="01"/>
+			<CommObjectDependency CommObjId="142" Test="eq" TestParamId="5" TestValue="01"/>
+			<CommObjectDependency CommObjId="143" Test="eq" TestParamId="5" TestValue="01"/>
+			
+		</Dependencies>
+		
+	</Device>
+</KonnektingDevice>
