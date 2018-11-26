@@ -22,6 +22,9 @@ void knxEvents(byte index)
             if (Knx.read(COMOBJ_cmd_close))
             {
                 Debug.println(F("Received 1 on cmd_close"));
+
+                //ToDo: check if 1
+                //If yes, set OUT_OPENCLOSE to 1 for 500ms
             }
             break;
 
@@ -69,7 +72,10 @@ void setup_gpio()
   pinMode(OUT_OPENCLOSE, OUTPUT);
   pinMode(OUT_OPENPART, OUTPUT);
 
-  pinMode(OUT_OPENPART, OUTPUT);
+  pinMode(IN_CLOSED, INPUT);
+  pinMode(IN_OPENED, INPUT);
+  pinMode(IN_BARRIER, INPUT);
+  pinMode(IN_CURRENT, INPUT);
 }
 
 void reboot()

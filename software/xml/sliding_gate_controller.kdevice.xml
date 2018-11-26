@@ -88,7 +88,7 @@
             </CommObject>
 			
 			<CommObject Id="9" IdName="stat_moving_direction">
-                <Name>Moving</Name>
+                <Name>Moving Direction</Name>
                 <Function>Status</Function>
                 <DataPointType>1.009</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
