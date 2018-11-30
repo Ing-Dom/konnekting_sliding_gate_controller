@@ -107,6 +107,13 @@
                 <DataPointType>1.002</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
+			
+			<CommObject Id="12" IdName="debug">
+                <Name>DEBUG</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
 		</CommObjects>
 		<Dependencies>
 		</Dependencies>

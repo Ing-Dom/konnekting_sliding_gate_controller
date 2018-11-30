@@ -6,11 +6,7 @@
 // include device related configuration code, created by "KONNEKTING CodeGenerator"
 #include "kdevice_sgc.h"
 
-
-Bounce debouncer_in_closed = Bounce();
-Bounce debouncer_in_opened = Bounce(); 
-Bounce debouncer_in_barrier = Bounce(); 
-
+// Stuff for CycleControl
 
 #define T1_CYCLETIME 25
 #define T2_CYCLETIME 50
@@ -22,10 +18,19 @@ unsigned long T2_last_run = 0;
 unsigned long T3_last_run = 0;
 unsigned long T4_last_run = 0;
 unsigned long T5_last_run = 0;
+unsigned int T1_duration = 0;
+unsigned int T2_duration = 0;
+unsigned int T3_duration = 0;
+unsigned int T4_duration = 0;
+unsigned int T5_duration = 0;
+unsigned int T1_overtime = 0;
+unsigned int T2_overtime = 0;
+unsigned int T3_overtime = 0;
+unsigned int T4_overtime = 0;
+unsigned int T5_overtime = 0;
 
+// End Stuff for CycleControl
 
-int out_openclose_cnt = 0;
-bool in_closed_lastvalues[8];
 
 enum gate_state 
 { 
@@ -37,6 +42,16 @@ enum gate_state
    intermediate_will_open,
    intermediate_will_close
 } main_gate_state;
+
+Bounce debouncer_in_closed = Bounce();
+Bounce debouncer_in_opened = Bounce(); 
+Bounce debouncer_in_barrier = Bounce();
+
+bool in_closed = false;
+bool in_opened = false;
+bool in_barrier = false;
+unsigned int out_openclose_cnt = 0;
+unsigned int in_current_smoothed = 0;
 
 
 
@@ -128,39 +143,6 @@ void loop()
     // only do measurements and other sketch related stuff if not in programming mode
     if (Konnekting.isReadyForApplication())
     {
-      if(currentTime > mytime + 25)
-      {
-        int in_current_raw = analogRead(IN_CURRENT);
-      
-        mytime = currentTime;
-
-
-       
-        // Handling of Inputs
-        in_closed = debouncer_in_closed.read();
-
-
-
-
-         // Handling of Outputs
-
-        if(out_openclose_cnt > 0)
-        {
-          digitalWrite(OUT_OPENCLOSE, HIGH);
-          out_openclose_cnt--;
-        }
-        else
-        {
-          digitalWrite(OUT_OPENCLOSE, LOW);
-        }
-      }
-    }
-      
-      if(currentTime > mytime2 + 5000)
-      {
-        
-        mytime2 = currentTime;
-      }
     }
 }
 
@@ -170,34 +152,95 @@ void callT()
 
   if(calculateElapsedMillis(T1_last_run, currentMillis) >= T1_CYCLETIME)
   {
+    T1_overtime = calculateElapsedMillis(T1_last_run, currentMillis) - T1_CYCLETIME;
     T1();
-    //ToDo: Diag runtime of slice
+    T1_duration = calculateElapsedMillis(currentMillis, millis());
   }
   else if(calculateElapsedMillis(T2_last_run, currentMillis) >= T2_CYCLETIME)
   {
+    T2_overtime = calculateElapsedMillis(T2_last_run, currentMillis) - T2_CYCLETIME;
     T2();
+    T2_duration = calculateElapsedMillis(currentMillis, millis());
+  }
+  else if(calculateElapsedMillis(T3_last_run, currentMillis) >= T3_CYCLETIME)
+  {
+    T3_overtime = calculateElapsedMillis(T3_last_run, currentMillis) - T3_CYCLETIME;
+    T3();
+    T3_duration = calculateElapsedMillis(currentMillis, millis());
+  }
+  else if(calculateElapsedMillis(T4_last_run, currentMillis) >= T4_CYCLETIME)
+  {
+    T4_overtime = calculateElapsedMillis(T4_last_run, currentMillis) - T4_CYCLETIME;
+    T4();
+    T4_duration = calculateElapsedMillis(currentMillis, millis());
+  }
+  else if(calculateElapsedMillis(T5_last_run, currentMillis) >= T5_CYCLETIME)
+  {
+    T5_overtime = calculateElapsedMillis(T5_last_run, currentMillis) - T5_CYCLETIME;
+    T5();
+    T5_duration = calculateElapsedMillis(currentMillis, millis());
   }
 }
 
 void T1()
 {
+  int in_current_raw = analogRead(IN_CURRENT);
   
+  
+  // Handling of Inputs
+  
+  if(in_closed != debouncer_in_closed.read())
+  {
+    in_closed = debouncer_in_closed.read();
+    Knx.write(COMOBJ_stat_closed, in_closed);
+  }
+
+  if(in_opened != debouncer_in_opened.read())
+  {
+    in_opened = debouncer_in_opened.read();
+    Knx.write(COMOBJ_stat_opened, in_opened);
+  }
+
+  if(in_barrier != debouncer_in_barrier.read())
+  {
+    in_barrier = debouncer_in_barrier.read();
+    Knx.write(COMOBJ_stat_barrier, in_barrier);
+  }
+
+  in_current_smoothed = 0.2 * analogRead(IN_CURRENT) + 0.8 * in_current_smoothed;
+  
+  
+   // Handling of Outputs
+  
+  if(out_openclose_cnt > 0)
+  {
+    digitalWrite(OUT_OPENCLOSE, HIGH);
+    out_openclose_cnt--;
+  }
+  else
+  {
+    digitalWrite(OUT_OPENCLOSE, LOW);
+  }
 }
+
 void T2()
 {
   
 }
+
 void T3()
 {
   
 }
+
 void T4()
 {
   
 }
+
 void T5()
 {
-  
+  Knx.write(COMOBJ_debug, in_current_smoothed);
 }
 
 unsigned long calculateElapsedMillis(unsigned long lastrunMillis, unsigned long currentMillis)

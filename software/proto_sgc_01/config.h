@@ -11,18 +11,19 @@
 // ### KONNEKTING Configuration
 // ################################################
 
+/*
 // Nano & Pro Mini
 #include <SoftwareSerial.h>
 SoftwareSerial softserial(6, 7); // RX, TX
 #define DEBUGSERIAL softserial
 #define KNX_SERIAL Serial
+*/
 
 
-/*
 // Micro & Pro Micro
 #define DEBUGSERIAL Serial
 #define KNX_SERIAL Serial1 // Leonardo/Micro etc. use Serial1
-*/
+
 
 /*
 // Mega2560
@@ -34,29 +35,22 @@ SoftwareSerial softserial(6, 7); // RX, TX
 // ### IO Configuration
 // ################################################
 
+/*
 //ProMini
 #define PROG_LED_PIN 13
 #define PROG_BUTTON_PIN 2
+*/
 
 
-/*
 // Micro
 #define PROG_LED_PIN 13 //(32/PC7/D13)
 #define PROG_BUTTON_PIN 2 //(19/PD1/D2)
-#define OUTPIN_A 9 //(29/PB5/D9)
-#define OUTPIN_B 10 //(30/PB6/D10)
-#define OUTPIN_C 11 //(12/PB7/D11)
-#define OUTPIN_D 5 //(31/PC6/D5)
-*/
+
 
 /*
 // ProMicro
 #define PROG_LED_PIN 3 //(/P/D3)
 #define PROG_BUTTON_PIN 2 //(19/PD1/D2)
-#define OUTPIN_A 9 //(29/PB5/D9)
-#define OUTPIN_B 10 //(30/PB6/D10)
-#define OUTPIN_C 11 //(12/PB7/D11)
-#define OUTPIN_D 5 //(31/PC6/D5)
 */
 
 /*

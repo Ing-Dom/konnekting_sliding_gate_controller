@@ -14,6 +14,7 @@
 #define COMOBJ_stat_moving_direction 9
 #define COMOBJ_stat_position 10
 #define COMOBJ_stat_barrier 11
+#define COMOBJ_debug 12
 #define PARAM_close_time 0
 #define PARAM_close_time 1
 #define PARAM_close_ext 2
@@ -30,7 +31,8 @@ KnxComObject KnxDevice::_comObjectsList[] = {
     /* Index 8 - stat_moving */ KnxComObject(KNX_DPT_1_002, 0x34),
     /* Index 9 - stat_moving_direction */ KnxComObject(KNX_DPT_1_009, 0x34),
     /* Index 10 - stat_position */ KnxComObject(KNX_DPT_5_001, 0x34),
-    /* Index 11 - stat_barrier */ KnxComObject(KNX_DPT_1_002, 0x34)
+    /* Index 11 - stat_barrier */ KnxComObject(KNX_DPT_1_002, 0x34),
+    /* Index 12 - debug */ KnxComObject(KNX_DPT_12_001, 0x34)
 };
 const byte KnxDevice::_numberOfComObjects = sizeof (_comObjectsList) / sizeof (KnxComObject); // do not change this code
        
