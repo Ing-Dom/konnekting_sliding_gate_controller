@@ -70,6 +70,6 @@ SoftwareSerial softserial(6, 7); // RX, TX
 #define IN_BARRIER  12
 #define IN_CURRENT  A0
 
-#define OUT_OPENCLOSE 8
-#define OUT_OPENPART  9
+#define OUT_OPENCLOSE 10
+#define OUT_OPENPART  11
 
