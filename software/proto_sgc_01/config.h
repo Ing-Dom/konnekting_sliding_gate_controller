@@ -57,7 +57,6 @@ SoftwareSerial softserial(6, 7); // RX, TX
 // Mega 2560
 #define PROG_LED_PIN 4      //(1/PG5)
 #define PROG_BUTTON_PIN 18  //(46/PD3)
-#define ONE_WIRE_BUS 9 
 */
 
 
