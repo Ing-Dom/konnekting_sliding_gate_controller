@@ -1,7 +1,7 @@
 // ################################################
 // ### DEBUG CONFIGURATION
 // ################################################
-#define KDEBUG // comment this line to disable DEBUG mode
+//#define KDEBUG // comment this line to disable DEBUG mode
 #ifdef KDEBUG
 #include <DebugUtil.h>
 #define APPDEBUG
@@ -65,11 +65,11 @@ SoftwareSerial softserial(6, 7); // RX, TX
 // ### Global variables, sketch related
 // ################################################
 
-#define IN_CLOSED   10
-#define IN_OPENED   11
-#define IN_BARRIER  12
+#define IN_CLOSED   7
+#define IN_OPENED   8
+#define IN_BARRIER  9
 #define IN_CURRENT  A0
 
 #define OUT_OPENCLOSE 10
-#define OUT_OPENPART  11
+#define OUT_OPENPART  16
 

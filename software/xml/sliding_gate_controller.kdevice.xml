@@ -6,11 +6,11 @@
 		
 		<Parameters>
 			<ParameterGroup Name="General" Id="0">
-				<Parameter Id="0" IdName="close_time">
+				<Parameter Id="0" IdName="close_time_contact">
 					<Description>Auto Close Time after contact [s] (0 = no auto close)</Description>
 					<Value Type="uint8" Default="00"/>
 				</Parameter>
-				<Parameter Id="1" IdName="close_time">
+				<Parameter Id="1" IdName="close_time_nocontact">
 					<Description>Auto Close Time without contact [min] (0 = no auto close)</Description>
 					<Value Type="uint8" Default="00"/>
 				</Parameter>

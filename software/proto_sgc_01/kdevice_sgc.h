@@ -15,8 +15,8 @@
 #define COMOBJ_stat_position 10
 #define COMOBJ_stat_barrier 11
 #define COMOBJ_debug 12
-#define PARAM_close_time 0
-#define PARAM_close_time 1
+#define PARAM_close_time_contact 0
+#define PARAM_close_time_nocontact 1
 #define PARAM_close_ext 2
         
 KnxComObject KnxDevice::_comObjectsList[] = {
