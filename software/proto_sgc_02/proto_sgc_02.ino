@@ -244,16 +244,18 @@ void T1() // 25ms
   
   // Handling of Inputs
   
-  if(in_closed != debouncer_in_closed.read())
+  // open and close are Low-active
+  
+  if(in_closed != !(debouncer_in_closed.read()))
   {
-    in_closed = debouncer_in_closed.read();
+    in_closed = !(debouncer_in_closed.read());
     Knx.write(COMOBJ_stat_closed, in_closed);
     Debug.println(F("inclosed changed: %d"), in_closed );
   }
 
-  if(in_opened != debouncer_in_opened.read())
+  if(in_opened != !(debouncer_in_opened.read()))
   {
-    in_opened = debouncer_in_opened.read();
+    in_opened = !(debouncer_in_opened.read());
     Knx.write(COMOBJ_stat_opened, in_opened);
     Debug.println(F("inopened changed: %d"), in_opened );
   }
