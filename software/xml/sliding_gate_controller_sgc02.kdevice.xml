@@ -18,15 +18,19 @@
 					<Description>Auto Close on external opening</Description>
 					<Value Type="uint8" Default="00" Options="00=Disabled|01=Enabled"/>
 				</Parameter>
-				<Parameter Id="3" IdName="DRIVECURRENT_ZERO">
+				<Parameter Id="3" IdName="enable_errormessage">
+					<Description>Enable ErrorCode</Description>
+					<Value Type="uint8" Default="00" Options="00=Disabled|01=Enabled"/>
+				</Parameter>
+				<Parameter Id="4" IdName="DRIVECURRENT_ZERO">
 					<Description>DRIVECURRENT_ZERO</Description>
 					<Value Type="uint16" Default="01FD"/>
 				</Parameter>
-				<Parameter Id="3" IdName="DRIVECURRENT_JIT">
+				<Parameter Id="5" IdName="DRIVECURRENT_JIT">
 					<Description>DRIVECURRENT_JIT</Description>
 					<Value Type="uint16" Default="0005"/>
 				</Parameter>
-				<Parameter Id="3" IdName="DRIVECURRENT_NUM">
+				<Parameter Id="6" IdName="DRIVECURRENT_NUM">
 					<Description>DRIVECURRENT_NUM</Description>
 					<Value Type="uint16" Default="0003"/>
 				</Parameter>
@@ -120,59 +124,66 @@
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
 			
-			<CommObject Id="12" IdName="debug1">
+			<CommObject Id="12" IdName="error_code">
+                <Name>ErrorCode</Name>
+                <Function>Error</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="13" IdName="debug1">
                 <Name>DEBUG1</Name>
                 <Function>DEBUG</Function>
                 <DataPointType>12.001</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
 			
-			<CommObject Id="13" IdName="debug2">
+			<CommObject Id="14" IdName="debug2">
                 <Name>DEBUG2</Name>
                 <Function>DEBUG</Function>
                 <DataPointType>12.001</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
 			
-			<CommObject Id="17" IdName="debug3">
+			<CommObject Id="15" IdName="debug3">
                 <Name>DEBUG3</Name>
                 <Function>DEBUG</Function>
                 <DataPointType>12.001</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
 			
-			<CommObject Id="18" IdName="debug4">
+			<CommObject Id="16" IdName="debug4">
                 <Name>DEBUG4</Name>
                 <Function>DEBUG</Function>
                 <DataPointType>12.001</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
 			
-			<CommObject Id="19" IdName="debug5">
+			<CommObject Id="17" IdName="debug5">
                 <Name>DEBUG5</Name>
                 <Function>DEBUG</Function>
                 <DataPointType>12.001</DataPointType>
                 <Flags>52</Flags> <!-- KLÜ -->
             </CommObject>
 			
-			<CommObject Id="20" IdName="test1">
+			<CommObject Id="18" IdName="test1">
                 <Name>Test1</Name>
                 <Function>DEBUG</Function>
-                <DataPointType>12.001</DataPointType>
+                <DataPointType>1.001</DataPointType>
                 <Flags>40</Flags> <!-- KS -->
             </CommObject>
 			
-			<CommObject Id="21" IdName="test2">
+			<CommObject Id="19" IdName="test2">
                 <Name>Test2</Name>
                 <Function>DEBUG</Function>
-                <DataPointType>12.001</DataPointType>
+                <DataPointType>1.001</DataPointType>
                 <Flags>40</Flags> <!-- KS -->
             </CommObject>
 			
-			<CommObject Id="22" IdName="test3">
+			<CommObject Id="20" IdName="test3">
                 <Name>Test3</Name>
                 <Function>DEBUG</Function>
-                <DataPointType>12.001</DataPointType>
+                <DataPointType>1.001</DataPointType>
                 <Flags>40</Flags> <!-- KS -->
             </CommObject>
 		</CommObjects>

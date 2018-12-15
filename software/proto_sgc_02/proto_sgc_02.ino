@@ -45,6 +45,7 @@ enum gate_state
    intermediate_will_close
 } main_gate_state;
 
+
 Bounce debouncer_in_closed = Bounce();
 Bounce debouncer_in_opened = Bounce(); 
 Bounce debouncer_in_barrier = Bounce();
@@ -59,7 +60,13 @@ unsigned int in_current_smoothed = DRIVECURRENT_ZERO;
 int in_current_smoothed_int = 0;
 unsigned short opening_cnt = 0;
 unsigned short closing_cnt = 0;
+unsigned short stopped_cnt = 0;
+bool moving_opening = false;
+bool moving_closing = false;
 
+bool test1 = false;
+bool test2 = false;
+bool test3 = false;
 
 
 
@@ -97,25 +104,65 @@ void knxEvents(byte index)
                 }
             }
        break;
-        case COMOBJ_cmd_stop:
-            if (Knx.read(COMOBJ_cmd_stop))
+       case COMOBJ_cmd_leave_open:
+            if (Knx.read(COMOBJ_cmd_leave_open))
             {
-                Debug.println(F("Received 1 on COMOBJ_cmd_stop"));
-
-                out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
-                
+                Debug.println(F("Received 1 on COMOBJ_cmd_leave_open"));
             }
-        break;
+       break;
        case COMOBJ_cmd_partly_open:
             if (Knx.read(COMOBJ_cmd_partly_open))
             {
                 Debug.println(F("Received 1 on COMOBJ_cmd_partly_open"));
-                enable_drivecurrent_sendknx = true;
+                out_openpart_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
+            }
+       break;
+       case COMOBJ_cmd_stop:
+            if (Knx.read(COMOBJ_cmd_stop))
+            {
+                Debug.println(F("Received 1 on COMOBJ_cmd_stop"));
+
+                if(!in_closed && !in_opened && !moving_opening && !moving_closing) // ToDo
+                {
+                   out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
+                }
+            }
+        break;
+        case COMOBJ_cmd_position:
+            Debug.println(F("Received %u on COMOBJ_cmd_position"),Knx.read(COMOBJ_cmd_position));
+        break;
+
+        case COMOBJ_test1:
+            if (Knx.read(COMOBJ_test1))
+            {
+                Debug.println(F("Received 1 on COMOBJ_test1"));
+                test1 = true;
             }
             else
             {
-                Debug.println(F("Received 0 on COMOBJ_cmd_partly_open"));
-                enable_drivecurrent_sendknx = false;
+              Debug.println(F("Received 0 on COMOBJ_test1"));
+              test1 = false;
+            }
+       break;
+
+       case COMOBJ_test2:
+            if (Knx.read(COMOBJ_test2))
+            {
+                Debug.println(F("Received 1 on COMOBJ_test2"));
+                test2 = true;
+            }
+            else
+            {
+              Debug.println(F("Received 0 on COMOBJ_test2"));
+              test2 = false;
+            }
+       break;
+
+        case COMOBJ_test3:
+            if (Knx.read(COMOBJ_test3))
+            {
+                Debug.println(F("Received 1 on COMOBJ_test3"));
+                out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
             }
        break;
 
@@ -260,9 +307,9 @@ void T1() // 25ms
     Debug.println(F("inopened changed: %d"), in_opened );
   }
 
-  if(in_barrier != debouncer_in_barrier.read())
+  if(in_barrier != !(debouncer_in_barrier.read()))
   {
-    in_barrier = debouncer_in_barrier.read();
+    in_barrier = !(debouncer_in_barrier.read());
     Knx.write(COMOBJ_stat_barrier, in_barrier);
     Debug.println(F("inbarrier changed: %d"), in_barrier );
   }
@@ -300,32 +347,114 @@ void T2() // 50ms
 
 void T3() // 100ms
 {
-  in_current_smoothed = 0.2 * analogRead(IN_CURRENT) + 0.8 * in_current_smoothed;
+  int in_current_raw =  analogRead(IN_CURRENT);
+  in_current_smoothed = 0.2 * in_current_raw + 0.8 * in_current_smoothed;
   in_current_smoothed_int = in_current_smoothed - DRIVECURRENT_ZERO;
   
   if(in_current_smoothed_int > DRIVECURRENT_JIT) // Opening
-	opening_cnt++;
+  {
+	  opening_cnt++;
+    closing_cnt = 0;
+    stopped_cnt = 0;
+  }
+  else if(in_current_smoothed_int < -DRIVECURRENT_JIT) // Closing
+  {
+    opening_cnt = 0;
+    closing_cnt++;
+    stopped_cnt = 0;
+  }
   else
-	opening_cnt = 0;
+  {
+    opening_cnt = 0;
+    closing_cnt = 0;
+    stopped_cnt++;
+  }
+
+  if(moving_opening)
+  {
+    if(stopped_cnt > DRIVECURRENT_NUM)
+    {
+      moving_closing = false;
+      moving_opening = false;
+      Knx.write(COMOBJ_stat_moving, false);
+    }
+    else if(closing_cnt > DRIVECURRENT_NUM)
+    {
+      moving_closing = true;
+      moving_opening = false;
+      Knx.write(COMOBJ_stat_moving_direction, true);
+    }
+  }
+  else if(moving_closing)
+  {
+    if(opening_cnt > DRIVECURRENT_NUM)
+    {
+      moving_closing = false;
+      moving_opening = true;
+      Knx.write(COMOBJ_stat_moving_direction, false);
+    }
+    else if(stopped_cnt > DRIVECURRENT_NUM)
+    {
+      moving_closing = false;
+      moving_opening = false;
+      Knx.write(COMOBJ_stat_moving, false);
+    }
+  }
+  else
+  {
+    if(opening_cnt > DRIVECURRENT_NUM)
+    {
+      moving_closing = false;
+      moving_opening = true;
+      Knx.write(COMOBJ_stat_moving, true);
+      Knx.write(COMOBJ_stat_moving_direction, false);
+    }
+    else if(closing_cnt > DRIVECURRENT_NUM)
+    {
+      moving_closing = true;
+      moving_opening = false;
+      Knx.write(COMOBJ_stat_moving, true);
+      Knx.write(COMOBJ_stat_moving_direction, true);
+    }
+  } 
   
   if(opening_cnt > DRIVECURRENT_NUM)
-    
-  
-  
-  if(enable_drivecurrent_sendknx)
   {
-    Knx.write(COMOBJ_debug, in_current_smoothed);
+    moving_closing = false;
+    moving_opening = true;
   }
+  else if(closing_cnt > DRIVECURRENT_NUM)
+  {
+    moving_closing = true;
+    moving_opening = false;
+  }
+
+  
+  
+  
+  if(test1)
+  {
+    Knx.write(COMOBJ_debug1, in_current_raw);
+  }
+
+  if(test2)
+  {
+    Knx.write(COMOBJ_debug2, in_current_smoothed);
+  }
+
+
+
+  
 }
 
-void T4()
+void T4() // 500ms
 {
   
 }
 
-void T5()
+void T5() // 10000ms = 10s
 {
-  Knx.write(COMOBJ_debug, 0);
+  Knx.write(COMOBJ_debug5, in_current_smoothed);
   //Debug.println(F("in_current_smoothed: %d"), in_current_smoothed );
 }
 
