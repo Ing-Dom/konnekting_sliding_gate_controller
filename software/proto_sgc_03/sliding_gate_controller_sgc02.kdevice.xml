@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<KonnektingDevice xmlns="http://konnekting.de/xml/KonnektingDevice/v0">
+    <Device ManufacturerId="7337" DeviceId="10" Revision="0">
+        <ManufacturerName>SirSydom KNX Labs</ManufacturerName>
+        <DeviceName>Sliding Gate Controller</DeviceName>
+		
+		<Parameters>
+			<ParameterGroup Name="General" Id="0">
+				<Parameter Id="0" IdName="close_time_contact">
+					<Description>Auto Close Time after contact [s] (0 = no auto close)</Description>
+					<Value Type="uint8" Default="00"/>
+				</Parameter>
+				<Parameter Id="1" IdName="close_time_nocontact">
+					<Description>Auto Close Time without contact [min] (0 = no auto close)</Description>
+					<Value Type="uint8" Default="00"/>
+				</Parameter>
+				<Parameter Id="2" IdName="close_ext">
+					<Description>Auto Close on external opening</Description>
+					<Value Type="uint8" Default="00" Options="00=Disabled|01=Enabled"/>
+				</Parameter>
+				<Parameter Id="3" IdName="enable_errormessage">
+					<Description>Enable ErrorCode</Description>
+					<Value Type="uint8" Default="00" Options="00=Disabled|01=Enabled"/>
+				</Parameter>
+				<Parameter Id="4" IdName="DRIVECURRENT_ZERO">
+					<Description>DRIVECURRENT_ZERO</Description>
+					<Value Type="uint16" Default="01FD"/>
+				</Parameter>
+				<Parameter Id="5" IdName="DRIVECURRENT_JIT">
+					<Description>DRIVECURRENT_JIT</Description>
+					<Value Type="uint16" Default="0005"/>
+				</Parameter>
+				<Parameter Id="6" IdName="DRIVECURRENT_NUM">
+					<Description>DRIVECURRENT_NUM</Description>
+					<Value Type="uint16" Default="0003"/>
+				</Parameter>
+			</ParameterGroup>
+		</Parameters>
+		
+        <CommObjects>
+			<CommObject Id="0" IdName="cmd_close">
+                <Name>Close</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="1" IdName="cmd_open">
+                <Name>Open</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="2" IdName="cmd_leave_open">
+                <Name>Open (Leave Open)</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="3" IdName="cmd_partly_open">
+                <Name>Open (Partly)</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="4" IdName="cmd_stop">
+                <Name>Stop</Name>
+                <Function>Command</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="5" IdName="cmd_position">
+                <Name>Position</Name>
+                <Function>Command</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			
+			
+			<CommObject Id="6" IdName="stat_closed">
+                <Name>Closed</Name>
+                <Function>Status</Function>
+                <DataPointType>1.002</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="7" IdName="stat_opened">
+                <Name>Opened</Name>
+                <Function>Status</Function>
+                <DataPointType>1.002</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="8" IdName="stat_moving">
+                <Name>Moving</Name>
+                <Function>Status</Function>
+                <DataPointType>1.002</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="9" IdName="stat_moving_direction">
+                <Name>Moving Direction</Name>
+                <Function>Status</Function>
+                <DataPointType>1.009</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="10" IdName="stat_position">
+                <Name>Position</Name>
+                <Function>Status</Function>
+                <DataPointType>5.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+
+			<CommObject Id="11" IdName="stat_barrier">
+                <Name>Barrier Blocked</Name>
+                <Function>Status</Function>
+                <DataPointType>1.002</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="12" IdName="error_code">
+                <Name>ErrorCode</Name>
+                <Function>Error</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="13" IdName="debug1">
+                <Name>DEBUG1</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="14" IdName="debug2">
+                <Name>DEBUG2</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="15" IdName="debug3">
+                <Name>DEBUG3</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="16" IdName="debug4">
+                <Name>DEBUG4</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="17" IdName="debug5">
+                <Name>DEBUG5</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>12.001</DataPointType>
+                <Flags>52</Flags> <!-- KLÜ -->
+            </CommObject>
+			
+			<CommObject Id="18" IdName="test1">
+                <Name>Test1</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="19" IdName="test2">
+                <Name>Test2</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+			
+			<CommObject Id="20" IdName="test3">
+                <Name>Test3</Name>
+                <Function>DEBUG</Function>
+                <DataPointType>1.001</DataPointType>
+                <Flags>40</Flags> <!-- KS -->
+            </CommObject>
+		</CommObjects>
+		<Dependencies>
+		</Dependencies>
+	</Device>
+</KonnektingDevice>
