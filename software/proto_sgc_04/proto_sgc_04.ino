@@ -44,6 +44,7 @@ int param_drivecurrent_zero = 0;
 int param_drivecurrent_jit = 0;
 int param_drivecurrent_num = 0;
 bool param_drivecurrent_autozero = false;
+unsigned short param_send_status_cyclic = 0;
 
 
 Bounce debouncer_in_closed = Bounce();
@@ -209,15 +210,23 @@ void setup()
     Konnekting.init(KNX_SERIAL, PROG_BUTTON_PIN, PROG_LED_PIN, MANUFACTURER_ID, DEVICE_ID, REVISION);
     if (!Konnekting.isFactorySetting())
     {
-        param_drivecurrent_zero = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_zero));
+		param_send_status_cyclic = (int)(Konnekting.getUINT16Param(PARAM_send_status_cyclic));
+        param_drivecurrent_zero = (unsigned short)(Konnekting.getUINT8Param(PARAM_drivecurrent_zero));
         param_drivecurrent_jit = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_jit));
         param_drivecurrent_num = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_num));
 		param_drivecurrent_autozero = Konnekting.getUINT8Param(PARAM_drivecurrent_autozero);
 		
 		if(param_drivecurrent_autozero)
 		{
-			//load from eeprom
-			//ToDo load or if not valid use param
+			int zero_current_value_from_eeprom = GetZeroCurrentValueFromEEPROM();
+			if(zero_current_value_from_eeprom >= 0)
+			{
+				zero_current_value = zero_current_value_from_eeprom;
+			}
+			else
+			{
+				zero_current_value = param_drivecurrent_zero;
+			}
 		}
 		else
 		{
@@ -367,13 +376,16 @@ void T1() // 25ms
 
 void T2() // 4ms
 {
+  // Start Reading drive current in buffer
   in_currents[in_currents_pointer] =  analogRead(IN_CURRENT);
   if(in_currents_pointer < 50)
     in_currents_pointer++;
+  // End Reading drive current in buffer
 }
 
 void T3() // 100ms
 {
+  // Start Smoothing drive current
   int in_current_raw =  0;
   long in_current_sum = 0;
   
@@ -385,7 +397,6 @@ void T3() // 100ms
   in_currents_pointer = 0;
 
 
-
   
   in_current_smoothed = in_current_raw/2 + in_current_raw_old1/4 + in_current_raw_old2/8 + in_current_raw_old3/8;
 
@@ -394,7 +405,9 @@ void T3() // 100ms
   in_current_raw_old1 = in_current_raw;
   
   in_current_smoothed_int = in_current_smoothed - zero_current_value;
+  // End Smoothing drive current
   
+  // Start Detection of Closing and Opening
   if(in_current_smoothed_int > param_drivecurrent_jit) // Opening
   {
 	  opening_cnt++;
@@ -472,7 +485,7 @@ void T3() // 100ms
     moving_closing = true;
     moving_opening = false;
   }
-
+  // End Detection of Closing and Opening
   
   
   
@@ -492,53 +505,83 @@ void T3() // 100ms
 }
 
 unsigned short initcnt = 0;
+unsigned int eepromwritecnt = 0;
 void T4() // 500ms
 {
-  if(!moving_closing && !moving_opening)
+  // Start Feature Auto Adaption of Zero Current Value
+  if(param_drivecurrent_autozero)
   {
-    not_move_count++;
-  }
-  else
-  {
-    not_move_count = 0;
-    if(zero_current_values_pointer >= 5)
-        zero_current_values_pointer -= 5;
-    else
-        zero_current_values_pointer = zero_current_values_pointer + 30 - 5;
-  }
+	  eepromwritecnt++;
+	  
+	  if((!moving_closing && !moving_opening) || in_closed || in_opened)	// usage of the end position switches here will auto adapt the ZCV even if programm detects moving due to wrong ZCV
+	  {
+		not_move_count++;
+	  }
+	  else
+	  {
+		not_move_count = 0;
+		if(zero_current_values_pointer >= 5)
+			zero_current_values_pointer -= 5;
+		else
+			zero_current_values_pointer = zero_current_values_pointer + 30 - 5;
+	  }
 
-  if(not_move_count > 5)
-  {
-    zero_current_values[zero_current_values_pointer] = in_current_smoothed;
+	  if(not_move_count > 5)
+	  {
+		zero_current_values[zero_current_values_pointer] = in_current_smoothed;
 
-    long sum = 0;
-    
-    for(int i=0;i<25;i++)
-    {
-      int arraypointer = zero_current_values_pointer - 5 - i;
-      if(arraypointer < 0)
-        arraypointer += 30;
-      sum += zero_current_values[arraypointer];
-    }
-    
-    if(initcnt < 30)
-      initcnt++;
-    else
-      zero_current_value = sum / 25;
-    
-    
-    if(zero_current_values_pointer == 29)
-      zero_current_values_pointer = 0;
-    else
-      zero_current_values_pointer++;
+		long sum = 0;
+		
+		for(int i=0;i<25;i++)
+		{
+		  int arraypointer = zero_current_values_pointer - 5 - i;
+		  if(arraypointer < 0)
+			arraypointer += 30;
+		  sum += zero_current_values[arraypointer];
+		}
+		
+		if(initcnt < 30)
+		  initcnt++;
+		else
+		{
+		  zero_current_value = sum / 25;
+		  Knx.write(COMOBJ_error_drivecurrentzero, zero_current_value);
+		  WriteZeroCurrentValueToEEPROM(zero_current_value);
+		  //ToDo Log (use return val)
+		}    
+		
+		if(zero_current_values_pointer == 29)
+		  zero_current_values_pointer = 0;
+		else
+		  zero_current_values_pointer++;
+	  }
   }
+  // End Feature Auto Adaption of Zero Current Value
+  
 }
 
+unsigned int send_status_cyclic_cnt = 0;
 void T5() // 10000ms = 10s
 {
   Knx.write(COMOBJ_debug5, in_current_smoothed);
   Knx.write(COMOBJ_debug4, zero_current_value);
   //Debug.println(F("in_current_smoothed: %d"), in_current_smoothed );
+  
+  // Start Cyclic Sending of Status
+  if(param_send_status_cyclic)
+  {
+	  if(send_status_cyclic_cnt-1 >= ((60*1000) / T5_CYCLETIME) * param_send_status_cyclic) // send every param_send_status_cyclic minutes
+	  {
+		Knx.write(COMOBJ_stat_closed, in_closed);
+		Knx.write(COMOBJ_stat_opened, in_opened);
+		Knx.write(COMOBJ_stat_barrier, in_barrier);
+		Knx.write(COMOBJ_stat_moving, moving_closing || moving_opening);
+		// ToDo Positioning Knx.write(COMOBJ_stat_position, ???);
+		send_status_cyclic_cnt = 0;
+	  }
+	  else
+		send_status_cyclic_cnt++;
+  }
 }
 
 unsigned long calculateElapsedMillis(unsigned long lastrunMillis, unsigned long currentMillis)
@@ -586,8 +629,10 @@ int WriteZeroCurrentValueToEEPROM(int value)
 			return 1;
 		}
 	}
-	
-	
+	if(eepromwritecnt<7200)
+	{
+		return -2;
+	}
 	
 	int freeEepromOffset = Konnekting.getFreeEepromOffset();
 	int lb = value % 0x100;
@@ -595,9 +640,14 @@ int WriteZeroCurrentValueToEEPROM(int value)
 	
 	EEPROM.update(freeEepromOffset + EEPROM_ADR_ZCV_LB, lb);
 	EEPROM.update(freeEepromOffset + EEPROM_ADR_ZCV_HB, hb);
+	eepromwritecnt = 0;
 	return 0;
 }
 
+void ErrorCode(unsigned short errorid)
+{
+	Knx.write(COMOBJ_error_code, true);
+}
 
 
 void reboot()
