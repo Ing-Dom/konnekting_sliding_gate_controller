@@ -45,7 +45,9 @@ int param_drivecurrent_jit = 0;
 int param_drivecurrent_num = 0;
 bool param_drivecurrent_autozero = false;
 unsigned short param_send_status_cyclic = 0;
-
+unsigned int param_close_time_contact = 0; // in sec
+unsigned int param_close_time_nocontact = 0; // in min
+bool param_close_ext = false;
 
 Bounce debouncer_in_closed = Bounce();
 Bounce debouncer_in_opened = Bounce(); 
@@ -78,7 +80,27 @@ unsigned short stopped_cnt = 0;
 bool moving_opening = false;
 bool moving_closing = false;
 
+enum ErrorID
+{
+  ERROR_Reserved = 0x00,
+  ERROR_ZCV_Invalid = 0x01,
+  ERROR_ZCV_New_written_to_EEPROM = 0x02,
+  ERROR_ZCV_New_Minor_change = 0x03,
+  ERROR_ZCV_New_EEPROM_Cooldown = 0x04
+};
 
+
+// Start AutoClose
+
+bool glob_AutoClose_Wait4Barrier = false;
+unsigned int glob_AutoClose_Cnt2CloseAfterBarrier = 0;
+unsigned int glob_AutoClose_Cnt2Close = 0;
+
+#define GLOB_LAST_COMMAND_VALID_START 5
+unsigned int glob_last_command = 0;
+unsigned int glob_last_command_valid = 0; // last command is valid when >0
+
+// End AutoClose
 
 
 // Debug stuff
@@ -99,42 +121,46 @@ void knxEvents(byte index)
             if (Knx.read(COMOBJ_cmd_close))
             {
                 Debug.println(F("Received 1 on cmd_close"));
-                if(in_opened)
-                {
-                  Debug.println(F("cmd_close => openclose"));
-                  out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
-                }
+				glob_last_command = index;
+				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
+                Close();
             }
        break;
        case COMOBJ_cmd_open:
             if (Knx.read(COMOBJ_cmd_open))
             {
                 Debug.println(F("Received 1 on cmd_open"));
-                if(in_closed)
-                {
-                  Debug.println(F("cmd_open => openclose"));
-                  out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
-                }
+				glob_last_command = index;
+				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
+                Open(false);
             }
        break;
        case COMOBJ_cmd_leave_open:
             if (Knx.read(COMOBJ_cmd_leave_open))
             {
                 Debug.println(F("Received 1 on COMOBJ_cmd_leave_open"));
+				glob_last_command = index;
+				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
+				Open(true);
             }
        break;
        case COMOBJ_cmd_partly_open:
             if (Knx.read(COMOBJ_cmd_partly_open))
             {
                 Debug.println(F("Received 1 on COMOBJ_cmd_partly_open"));
+				glob_last_command = index;
+				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
                 out_openpart_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
+				//ToDo: use OpenPart()
             }
        break;
        case COMOBJ_cmd_stop:
             if (Knx.read(COMOBJ_cmd_stop))
             {
                 Debug.println(F("Received 1 on COMOBJ_cmd_stop"));
-
+				glob_last_command = index;
+				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
+				//ToDo: use Stop()
                 if(!in_closed && !in_opened && !moving_opening && !moving_closing) // ToDo
                 {
                    out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
@@ -215,6 +241,9 @@ void setup()
         param_drivecurrent_jit = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_jit));
         param_drivecurrent_num = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_num));
 		param_drivecurrent_autozero = Konnekting.getUINT8Param(PARAM_drivecurrent_autozero);
+		param_close_time_contact = Konnekting.getUINT8Param(PARAM_drivecurrent_autozero);
+		param_close_time_nocontact = Konnekting.getUINT8Param(PARAM_drivecurrent_autozero);
+		param_close_ext = Konnekting.getUINT8Param(PARAM_close_ext);
 		
 		if(param_drivecurrent_autozero)
 		{
@@ -232,6 +261,8 @@ void setup()
 		{
 			zero_current_value = param_drivecurrent_zero;
 		}
+		
+		T1_last_run = T2_last_run = T3_last_run = T4_last_run = T5_last_run = millis();  // start well-defined into the time slices.. (init can take long)
     }
     Debug.println(F("Setup is ready. go to loop..."));
 }
@@ -258,6 +289,10 @@ void setup_gpio()
 
   debouncer_in_barrier.attach(IN_BARRIER);
   debouncer_in_barrier.interval(100); // interval in ms
+  
+  in_closed = digitalRead(IN_CLOSED);
+  in_opened = digitalRead(IN_OPENED);
+  in_barrier = digitalRead(IN_BARRIER);
 }
 
 
@@ -320,18 +355,35 @@ void callT()
 
 void T1() // 25ms
 {
-  int in_current_raw = analogRead(IN_CURRENT);
-  
-  
-  // Handling of Inputs
-  
-  // open and close are Low-active
-  
+  // Start Handling of Inputs
+  // open and close and barrier are Low-active signals
   if(in_closed != !(debouncer_in_closed.read()))
   {
     in_closed = !(debouncer_in_closed.read());
     Knx.write(COMOBJ_stat_closed, in_closed);
     Debug.println(F("inclosed changed: %d"), in_closed );
+	
+	// Start AutoClose
+	if(!in_closed)
+	{
+	  // detected opening action
+	  if(param_close_time_contact || param_close_time_nocontact)
+	  {
+		  if(	(glob_last_command_valid && (glob_last_command == COMOBJ_cmd_open || glob_last_command == COMOBJ_cmd_partly_open || glob_last_command == COMOBJ_cmd_position)) || // when last command is valid and was open, openpart or position
+				(!glob_last_command_valid && param_close_ext)) // when there was no command (=external opening) and the parameter for closing on external command is set
+		  {
+			glob_AutoClose_Wait4Barrier = true;
+			glob_AutoClose_Cnt2Close = param_close_time_nocontact * (60000 / T5_CYCLETIME);
+		  }
+	  }
+	}
+	else
+	{
+		glob_AutoClose_Wait4Barrier = false;
+		glob_AutoClose_Cnt2Close = 0;
+		glob_AutoClose_Cnt2CloseAfterBarrier = 0;
+	}
+	// End AutoClose
   }
 
   if(in_opened != !(debouncer_in_opened.read()))
@@ -346,13 +398,18 @@ void T1() // 25ms
     in_barrier = !(debouncer_in_barrier.read());
     Knx.write(COMOBJ_stat_barrier, in_barrier);
     Debug.println(F("inbarrier changed: %d"), in_barrier );
+	
+	// Start AutoClose
+	if(!in_barrier && glob_AutoClose_Wait4Barrier)
+	{
+		glob_AutoClose_Cnt2CloseAfterBarrier = param_close_time_contact * 1000 / T4_CYCLETIME;
+		glob_AutoClose_Cnt2Close = 0;
+	}
+	// End AutoClose
   }
-
+  // End Handling of Inputs
   
-  
-  
-   // Handling of Outputs
-  
+  // Start Handling of Outputs
   if(out_openclose_cnt > 0)
   {
     digitalWrite(OUT_OPENCLOSE, HIGH);
@@ -372,6 +429,7 @@ void T1() // 25ms
   {
     digitalWrite(OUT_OPENPART, LOW);
   }
+  // End Handling of Outputs
 }
 
 void T2() // 4ms
@@ -506,6 +564,7 @@ void T3() // 100ms
 
 unsigned short initcnt = 0;
 unsigned int eepromwritecnt = 0;
+bool firstrunT4 = true;
 void T4() // 500ms
 {
   // Start Feature Auto Adaption of Zero Current Value
@@ -546,9 +605,15 @@ void T4() // 500ms
 		{
 		  zero_current_value = sum / 25;
 		  Knx.write(COMOBJ_error_drivecurrentzero, zero_current_value);
-		  WriteZeroCurrentValueToEEPROM(zero_current_value);
-		  //ToDo Log (use return val)
-		}    
+		  int retval = WriteZeroCurrentValueToEEPROM(zero_current_value);
+		  switch(retval)
+		  {
+			  case  0: ErrorCode(ERROR_ZCV_New_written_to_EEPROM, 0, zero_current_value);
+			  case  1: ErrorCode(ERROR_ZCV_New_Minor_change, 0, zero_current_value);
+			  case -1: ErrorCode(ERROR_ZCV_Invalid, 0, zero_current_value);
+			  case -2: ErrorCode(ERROR_ZCV_New_EEPROM_Cooldown, 0, zero_current_value);
+		  }
+		}
 		
 		if(zero_current_values_pointer == 29)
 		  zero_current_values_pointer = 0;
@@ -557,6 +622,32 @@ void T4() // 500ms
 	  }
   }
   // End Feature Auto Adaption of Zero Current Value
+  
+  // Start Send Status once at Startup
+  if(firstrunT4)
+  {
+	  Knx.write(COMOBJ_stat_closed, in_closed);
+	  Knx.write(COMOBJ_stat_opened, in_opened);
+	  Knx.write(COMOBJ_stat_barrier, in_barrier);
+	  firstrunT4 = false;
+  }
+  // End Send Status once at Startup
+  
+  // Start AutoClose
+  glob_last_command_valid--;
+  if(param_close_time_contact || param_close_time_nocontact)
+  {
+	  if(glob_AutoClose_Cnt2CloseAfterBarrier > 0)
+	  {
+		  glob_AutoClose_Cnt2CloseAfterBarrier--;
+		  if(glob_AutoClose_Cnt2CloseAfterBarrier == 0)
+		  {
+			glob_AutoClose_Cnt2Close = 0;
+			Close();
+		  }
+	  }
+  }
+  // End AutoClose
   
 }
 
@@ -582,7 +673,72 @@ void T5() // 10000ms = 10s
 	  else
 		send_status_cyclic_cnt++;
   }
+  
+  // Start AutoClose
+  if(param_close_time_contact || param_close_time_nocontact)
+  {
+	  if(glob_AutoClose_Cnt2Close > 0)
+	  {
+		  glob_AutoClose_Cnt2Close--;
+		  if(glob_AutoClose_Cnt2Close == 0)
+		  {
+			glob_AutoClose_Cnt2CloseAfterBarrier = 0;
+			Close();
+		  }
+	  }
+  }
+  // End AutoClose
 }
+
+void Close()
+{
+	glob_AutoClose_Wait4Barrier = false;
+	glob_AutoClose_Cnt2Close = 0;
+	glob_AutoClose_Cnt2CloseAfterBarrier = 0;
+	
+	if(in_opened)
+	{
+		out_openclose_cnt = 500 / T1_CYCLETIME; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
+	}
+	else if(!in_closed)
+	{
+		if(!moving_opening && !moving_closing)
+		{
+			//ToDo OpenClose and check if it is ok if not stop and again
+		}
+		else if(moving_opening)
+		{
+			//ToDo Stop and Close
+		}
+	}
+}
+
+void Open(bool leave_open)
+{
+	if(leave_open)
+	{
+		glob_AutoClose_Wait4Barrier = false;
+		glob_AutoClose_Cnt2Close = 0;
+		glob_AutoClose_Cnt2CloseAfterBarrier = 0;
+	}
+	
+	if(in_closed)
+	{
+		out_openclose_cnt = 500 / T1_CYCLETIME; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
+	}
+	else if(!in_opened)
+	{
+		if(!moving_opening && !moving_closing)
+		{
+			//ToDo OpenClose and check if it is ok if not stop and again
+		}
+		else if(moving_closing)
+		{
+			//ToDo Stop and Open
+		}
+	}
+}
+
 
 unsigned long calculateElapsedMillis(unsigned long lastrunMillis, unsigned long currentMillis)
 {
@@ -644,9 +800,17 @@ int WriteZeroCurrentValueToEEPROM(int value)
 	return 0;
 }
 
-void ErrorCode(unsigned short errorid)
+
+
+void ErrorCode(ErrorID errorid, unsigned short info, unsigned int data)
 {
-	Knx.write(COMOBJ_error_code, true);
+	unsigned long sendvalue = 0;
+	sendvalue = errorid;
+	sendvalue *= 0x1000000;	
+	sendvalue += ((unsigned long)info)*0x10000;	
+	sendvalue += data;
+	
+	Knx.write(COMOBJ_error_code, sendvalue);
 }
 
 
