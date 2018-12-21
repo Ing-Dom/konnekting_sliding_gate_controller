@@ -89,6 +89,14 @@ enum ErrorID
   ERROR_ZCV_New_EEPROM_Cooldown = 0x04
 };
 
+enum MoveState
+{
+  MOVESTATE_Reserved = 0x00,
+  MOVESTATE_OPEN = 0x01,
+  MOVESTATE_CLOSE = 0x02,
+  MOVESTATE_STOP = 0x03
+};
+
 
 // Start AutoClose
 
@@ -739,6 +747,59 @@ void Open(bool leave_open)
 	}
 }
 
+//ToDo
+// Work
+unsigned short glob_MovingCheck_timer = 0;
+MoveState glob_MovingCheck_MoveStateFrom = 0;
+MoveState glob_MovingCheck_MoveStateTo = 0;
+
+void MovingCheck_Activate(MoveState arg_MoveState)
+{
+	glob_MovingCheck_MoveStateFrom = GetMoveState();
+	if(glob_MovingCheck_MoveStateFrom != arg_MoveState)
+	{
+		glob_MovingCheck_timer = 20;
+		glob_MovingCheck_MoveStateTo = arg_MoveState;
+	}
+}
+
+void MovingCheck_Cyclic()
+{
+	if(glob_MovingCheck_timer > 0)
+	{
+		glob_MovingCheck_timer--;
+		if(glob_MovingCheck_timer == 0)
+		{
+			// Timer expired
+			// ToDo Trigger OpenClose and retry
+		}
+		else
+		{
+			if(GetMoveState() != glob_MovingCheck_MoveStateFrom) // there has been a state change
+			{
+				if(GetMoveState() != glob_MovingCheck_MoveStateTo)
+				{
+					// ToDo Trigger OpenClose and retry
+				}
+				else
+				{
+					//finished, deativate
+					glob_MovingCheck_timer = 0;
+				}
+			}
+		}
+	}
+}
+
+MoveState GetMoveState()
+{
+	if(moving_opening)
+		return MOVESTATE_OPEN;
+	else if(moving_closing)
+		return MOVESTATE_CLOSE;
+	else
+		return MOVESTATE_STOP;
+}
 
 unsigned long calculateElapsedMillis(unsigned long lastrunMillis, unsigned long currentMillis)
 {
