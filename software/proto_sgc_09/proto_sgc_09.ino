@@ -16,6 +16,7 @@ Changelog 09:
 - finished feature start from middle pos in any case
 - T1 start autoclose bugfix for leave open not working when external command is enabled
 - Position reporting
+- Go To Position // ToDo
 */
 
 
@@ -140,7 +141,11 @@ unsigned int glob_last_command_valid = 0; // last command is valid when >0
 // Start Position Detection
 double glob_position = -1;
 double glob_position_step100ms = 256.0 / 300; // ToDo make this a param
+double glob_position_sent = -1;
 // End Position Detection
+
+int glob_goto_position = -1;
+
 
 
 // Debug stuff
@@ -203,6 +208,7 @@ void knxEvents(byte index)
         break;
         case COMOBJ_cmd_position:
             Debug.println(F("Received %u on COMOBJ_cmd_position"),Knx.read(COMOBJ_cmd_position));
+			MoveToPosition(Knx.read(COMOBJ_cmd_position));
         break;
 
         case COMOBJ_test1:
@@ -531,6 +537,7 @@ void T3() // 100ms
       moving_closing = false;
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving, false);
+	  SendPosition();
     }
     else if(closing_cnt > param_drivecurrent_num)
     {
@@ -538,6 +545,7 @@ void T3() // 100ms
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving_direction, true);
       glob_last_moving_direction = CLOSING;
+	  SendPosition();
     }
   }
   else if(moving_closing)
@@ -548,12 +556,14 @@ void T3() // 100ms
       moving_opening = true;
       Knx.write(COMOBJ_stat_moving_direction, false);
       glob_last_moving_direction = OPENING;
+	  SendPosition();
     }
     else if(stopped_cnt > param_drivecurrent_num)
     {
       moving_closing = false;
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving, false);
+	  SendPosition();
     }
   }
   else
@@ -565,6 +575,7 @@ void T3() // 100ms
       Knx.write(COMOBJ_stat_moving_direction, false);
       glob_last_moving_direction = OPENING;
       Knx.write(COMOBJ_stat_moving, true);
+	  SendPosition();
     }
     else if(closing_cnt > param_drivecurrent_num)
     {
@@ -573,6 +584,7 @@ void T3() // 100ms
       Knx.write(COMOBJ_stat_moving_direction, true);
       glob_last_moving_direction = CLOSING;
       Knx.write(COMOBJ_stat_moving, true);
+	  SendPosition();
     }
   } 
   
@@ -602,9 +614,9 @@ void T3() // 100ms
       glob_position = glob_position - glob_position_step100ms;
     }
   }
-
-  // ToDo: Check if sending and convert
-  // End Position Calculation
+  SendPositionOnDemand();
+  
+  //ToDo position monitoring
   
   
   if(test1)
@@ -728,7 +740,7 @@ void T5() // 10000ms = 10s
 		Knx.write(COMOBJ_stat_opened, in_opened);
 		Knx.write(COMOBJ_stat_barrier, in_barrier);
 		Knx.write(COMOBJ_stat_moving, moving_closing || moving_opening);
-		Knx.write(COMOBJ_stat_position, (unsigned int)glob_position);
+		SendPosition();
 		send_status_cyclic_cnt = 0;
 	  }
 	  else
@@ -833,6 +845,39 @@ void MovingCheck_Cyclic()
   }
 }
 
+void MoveToPosition(unsigned short knx_position)
+{
+	if(knx_position == 0)
+		Open(false);
+	else if (knx_position == 255)
+		Close();
+	else if(glob_position > -1) // dont move when position is unknown
+	{
+		// check if diff is big enough
+		// decide if Open() oder Close() has to be choosen
+		double diff = glob_position - knx_position;
+		if(diff > 15)
+		{
+			Open(false);
+		}
+		else if (diff < -15)
+		{
+			Close();
+		}
+		//activate monitoring
+		glob_goto_position = knx_position;
+		
+
+		
+		//ToDo somewhere else:
+		// monitor if position is reached, Stop() and cancel monitoring
+		// cancel monitoring when new command comes in
+		// cancel monitoring when external command comes in
+		// dont cancel monitoring when direction was not correct
+	}		
+	return;
+}
+
 
 void MovingCheck_Retrigger()
 {
@@ -864,6 +909,31 @@ MoveState GetMoveState()
 		return MOVESTATE_CLOSE;
 	else
 		return MOVESTATE_STOP;
+}
+
+void SendPosition()
+{
+	if((glob_position - ((int)glob_position) ) > 0.5)
+	{
+		Knx.write(COMOBJ_stat_position, (int)glob_position+1);
+	}
+	else
+	{
+		Knx.write(COMOBJ_stat_position, (int)glob_position);
+	}
+	
+	glob_position_sent = glob_position;
+	return;
+}
+
+void SendPositionOnDemand()
+{
+	double diff = glob_position - glob_position_sent;
+	if(diff > 25 || diff < -25)
+	{
+		SendPosition();
+	}
+	return;
 }
 
 unsigned long calculateElapsedMillis(unsigned long lastrunMillis, unsigned long currentMillis)
