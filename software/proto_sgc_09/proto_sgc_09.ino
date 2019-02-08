@@ -16,7 +16,7 @@ Changelog 09:
 - finished feature start from middle pos in any case
 - T1 start autoclose bugfix for leave open not working when external command is enabled
 - Position reporting
-- Go To Position // ToDo
+- Go To Position // in Work ToDo but testable
 */
 
 
@@ -139,12 +139,13 @@ unsigned int glob_last_command_valid = 0; // last command is valid when >0
 // End AutoClose
 
 // Start Position Detection
-double glob_position = -1;
+double glob_position = -1; // 0 = opened, 255 = closed
 double glob_position_step100ms = 256.0 / 300; // ToDo make this a param
 double glob_position_sent = -1;
 // End Position Detection
 
-int glob_goto_position = -1;
+int glob_goto_target_position = -1;
+int glob_goto_start_position = -1;
 
 
 
@@ -160,151 +161,187 @@ void knxEvents(byte index)
 {
   switch (index)
   {
-        case COMOBJ_cmd_close:
-            if (Knx.read(COMOBJ_cmd_close))
-            {
-                Debug.println(F("Received 1 on cmd_close"));
+    case COMOBJ_cmd_close:
+    {
+      if (Knx.read(COMOBJ_cmd_close))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on cmd_close"));
+        #endif
+    		glob_last_command = index;
+    		glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
+        Close();
+      }
+      break;
+    }
+    case COMOBJ_cmd_open:
+    {
+      if (Knx.read(COMOBJ_cmd_open))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on cmd_open"));
+        #endif
 				glob_last_command = index;
 				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
-                Close();
-            }
-       break;
-       case COMOBJ_cmd_open:
-            if (Knx.read(COMOBJ_cmd_open))
-            {
-                Debug.println(F("Received 1 on cmd_open"));
-				glob_last_command = index;
-				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
-                Open(false);
-            }
-       break;
-       case COMOBJ_cmd_leave_open:
-            if (Knx.read(COMOBJ_cmd_leave_open))
-            {
-                Debug.println(F("Received 1 on COMOBJ_cmd_leave_open"));
+        Open(false);
+      }
+      break;
+    }
+    case COMOBJ_cmd_leave_open:
+    {
+      if (Knx.read(COMOBJ_cmd_leave_open))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on COMOBJ_cmd_leave_open"));
+        #endif
 				glob_last_command = index;
 				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
 				Open(true);
-            }
-       break;
-       case COMOBJ_cmd_partly_open:
-            if (Knx.read(COMOBJ_cmd_partly_open))
-            {
-                Debug.println(F("Received 1 on COMOBJ_cmd_partly_open"));
+      }
+      break;
+    }
+    case COMOBJ_cmd_partly_open:
+    {
+      if (Knx.read(COMOBJ_cmd_partly_open))
+      {
+        Debug.println(F("Received 1 on COMOBJ_cmd_partly_open"));
 				glob_last_command = index;
 				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
-                out_openpart_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
+        out_openpart_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
 				//ToDo: use OpenPart()
-            }
-       break;
-       case COMOBJ_cmd_stop:
-            if (Knx.read(COMOBJ_cmd_stop))
-            {
-                Debug.println(F("Received 1 on COMOBJ_cmd_stop"));
+      }
+      break;
+    }
+    case COMOBJ_cmd_stop:
+    {
+      if (Knx.read(COMOBJ_cmd_stop))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on COMOBJ_cmd_stop"));
+        #endif
 				glob_last_command = index;
 				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
 				Stop();
-            }
-        break;
-        case COMOBJ_cmd_position:
-            Debug.println(F("Received %u on COMOBJ_cmd_position"),Knx.read(COMOBJ_cmd_position));
-			MoveToPosition(Knx.read(COMOBJ_cmd_position));
-        break;
-
-        case COMOBJ_test1:
-            if (Knx.read(COMOBJ_test1))
-            {
-                Debug.println(F("Received 1 on COMOBJ_test1"));
-                test1 = true;
-            }
-            else
-            {
-              Debug.println(F("Received 0 on COMOBJ_test1"));
-              test1 = false;
-            }
-       break;
-
-       case COMOBJ_test2:
-            if (Knx.read(COMOBJ_test2))
-            {
-                Debug.println(F("Received 1 on COMOBJ_test2"));
-                test2 = true;
-            }
-            else
-            {
-              Debug.println(F("Received 0 on COMOBJ_test2"));
-              test2 = false;
-            }
-       break;
-
-        case COMOBJ_test3:
-            if (Knx.read(COMOBJ_test3))
-            {
-                Debug.println(F("Received 1 on COMOBJ_test3"));
-                out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
-            }
-       break;
-
-
-        default:
-            break;
+      }
+      break;
     }
+    case COMOBJ_cmd_position:
+    {
+      #ifdef KDEBUG
+      Debug.println(F("Received %u on COMOBJ_cmd_position"),Knx.read(COMOBJ_cmd_position));
+      #endif
+			MoveToPosition(Knx.read(COMOBJ_cmd_position));
+      break;
+    }
+    case COMOBJ_test1:
+    {
+      if (Knx.read(COMOBJ_test1))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on COMOBJ_test1"));
+        #endif
+        test1 = true;
+      }
+      else
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 0 on COMOBJ_test1"));
+        #endif
+        test1 = false;
+      }
+      break;
+    }
+    case COMOBJ_test2:
+    {
+      if (Knx.read(COMOBJ_test2))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on COMOBJ_test2"));
+        #endif
+        test2 = true;
+      }
+      else
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 0 on COMOBJ_test2"));
+        #endif
+        test2 = false;
+      }
+      break;
+    }
+    case COMOBJ_test3:
+    {
+      if (Knx.read(COMOBJ_test3))
+      {
+        #ifdef KDEBUG
+        Debug.println(F("Received 1 on COMOBJ_test3"));
+        #endif
+        out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
+      }
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 }
 
 void setup()
 {
+  // debug related stuff
+  #ifdef KDEBUG
 
-    // debug related stuff
-#ifdef KDEBUG
+  // Start debug serial with 9600 bauds
+  DEBUGSERIAL.begin(9600);
 
-    // Start debug serial with 9600 bauds
-    DEBUGSERIAL.begin(9600);
+  #ifdef __AVR_ATmega32U4__
+  // wait for serial port to connect. Needed for Leonardo/Micro/ProMicro only
+  while (!DEBUGSERIAL)
+  #endif
 
-#ifdef __AVR_ATmega32U4__
-    // wait for serial port to connect. Needed for Leonardo/Micro/ProMicro only
-    while (!DEBUGSERIAL)
-#endif
+  // make debug serial port known to debug class
+  // Means: KONNEKTING will sue the same serial port for console debugging
+  Debug.setPrintStream(&DEBUGSERIAL);
+  #endif
 
-    // make debug serial port known to debug class
-    // Means: KONNEKTING will sue the same serial port for console debugging
-    Debug.setPrintStream(&DEBUGSERIAL);
-#endif
+  setup_gpio();
 
-    setup_gpio();
-
-    // Initialize KNX enabled Arduino Board
-    Konnekting.init(KNX_SERIAL, PROG_BUTTON_PIN, PROG_LED_PIN, MANUFACTURER_ID, DEVICE_ID, REVISION);
-    if (!Konnekting.isFactorySetting())
-    {
-		param_send_status_cyclic = (unsigned short)(Konnekting.getUINT8Param(PARAM_send_status_cyclic));
-        param_drivecurrent_zero = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_zero));
-        param_drivecurrent_jit = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_jit));
-        param_drivecurrent_num = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_num));
-		param_drivecurrent_autozero = (bool)Konnekting.getUINT8Param(PARAM_drivecurrent_autozero);
-		param_close_time_contact = (unsigned int)Konnekting.getUINT8Param(PARAM_close_time_contact);
-		param_close_time_nocontact = (unsigned int)Konnekting.getUINT8Param(PARAM_close_time_nocontact);
-		param_close_ext = (bool)Konnekting.getUINT8Param(PARAM_close_ext);
-		
-		if(param_drivecurrent_autozero)
-		{
-			int zero_current_value_from_eeprom = GetZeroCurrentValueFromEEPROM();
-			if(zero_current_value_from_eeprom >= 0)
-			{
-				zero_current_value = zero_current_value_from_eeprom;
-			}
-			else
-			{
-				zero_current_value = param_drivecurrent_zero;
-			}
-		}
-		else
-		{
-			zero_current_value = param_drivecurrent_zero;
-		}
-		
-		T1_last_run = T2_last_run = T3_last_run = T4_last_run = T5_last_run = millis();  // start well-defined into the time slices.. (init can take long)
-    }
-    Debug.println(F("Setup is ready. go to loop..."));
+  // Initialize KNX enabled Arduino Board
+  Konnekting.init(KNX_SERIAL, PROG_BUTTON_PIN, PROG_LED_PIN, MANUFACTURER_ID, DEVICE_ID, REVISION);
+  if (!Konnekting.isFactorySetting())
+  {
+	  param_send_status_cyclic = (unsigned short)(Konnekting.getUINT8Param(PARAM_send_status_cyclic));
+    param_drivecurrent_zero = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_zero));
+    param_drivecurrent_jit = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_jit));
+    param_drivecurrent_num = (int)(Konnekting.getUINT16Param(PARAM_drivecurrent_num));
+  	param_drivecurrent_autozero = (bool)Konnekting.getUINT8Param(PARAM_drivecurrent_autozero);
+  	param_close_time_contact = (unsigned int)Konnekting.getUINT8Param(PARAM_close_time_contact);
+  	param_close_time_nocontact = (unsigned int)Konnekting.getUINT8Param(PARAM_close_time_nocontact);
+  	param_close_ext = (bool)Konnekting.getUINT8Param(PARAM_close_ext);
+	
+  	if(param_drivecurrent_autozero)
+  	{
+  		int zero_current_value_from_eeprom = GetZeroCurrentValueFromEEPROM();
+  		if(zero_current_value_from_eeprom >= 0)
+  		{
+  			zero_current_value = zero_current_value_from_eeprom;
+  		}
+  		else
+  		{
+  			zero_current_value = param_drivecurrent_zero;
+  		}
+  	}
+  	else
+  	{
+  		zero_current_value = param_drivecurrent_zero;
+  	}
+  	
+  	T1_last_run = T2_last_run = T3_last_run = T4_last_run = T5_last_run = millis();  // start well-defined into the time slices.. (init can take long)
+  }
+  #ifdef KDEBUG
+  Debug.println(F("Setup is ready. go to loop..."));
+  #endif
 }
 
 
@@ -339,17 +376,17 @@ void setup_gpio()
 
 void loop()
 {
-    Knx.task();
-    debouncer_in_closed.update();
-    debouncer_in_opened.update();
-    debouncer_in_barrier.update();
-    unsigned long currentTime = millis();
-    
-    // only do measurements and other sketch related stuff if not in programming mode
-    if (Konnekting.isReadyForApplication())
-    {
-      callT();
-    }
+  Knx.task();
+  debouncer_in_closed.update();
+  debouncer_in_opened.update();
+  debouncer_in_barrier.update();
+  unsigned long currentTime = millis();
+  
+  // only do measurements and other sketch related stuff if not in programming mode
+  if (Konnekting.isReadyForApplication())
+  {
+    callT();
+  }
 }
 
 void callT()
@@ -401,11 +438,13 @@ void T1() // 25ms
   {
     in_closed = !(debouncer_in_closed.read());
     Knx.write(COMOBJ_stat_closed, in_closed);
+    #ifdef KDEBUG
     Debug.println(F("inclosed changed: %d"), in_closed );
-	  
+    #endif
+
+    // Start AutoClose
   	if(!in_closed)
   	{
-      // Start AutoClose
   	  // detected opening action
   		if((param_close_ext && !glob_last_command_valid) ||
   		(glob_last_command_valid && (glob_last_command == COMOBJ_cmd_open || glob_last_command == COMOBJ_cmd_partly_open || glob_last_command == COMOBJ_cmd_position))) //// when there was no command (=external opening) and the parameter for closing on external command is set or when last command is valid and was open, openpart or position 
@@ -419,23 +458,24 @@ void T1() // 25ms
   	  }
   	}
     // End AutoClose
-    else
-    {
-    }
   }
 
   if(in_opened != !(debouncer_in_opened.read()))
   {
     in_opened = !(debouncer_in_opened.read());
     Knx.write(COMOBJ_stat_opened, in_opened);
+    #ifdef KDEBUG
     Debug.println(F("inopened changed: %d"), in_opened );
+    #endif
   }
 
   if(in_barrier != !(debouncer_in_barrier.read()))
   {
     in_barrier = !(debouncer_in_barrier.read());
     Knx.write(COMOBJ_stat_barrier, in_barrier);
+    #ifdef KDEBUG
     Debug.println(F("inbarrier changed: %d"), in_barrier );
+    #endif
   
   	// Start AutoClose
   	if(!in_barrier && glob_AutoClose_Wait4Barrier)
@@ -615,9 +655,35 @@ void T3() // 100ms
     }
   }
   SendPositionOnDemand();
-  
-  //ToDo position monitoring
-  
+  // End Position Calculation
+
+  // Start Position Monitoring
+  if(glob_goto_target_position >= 0) // position monitoring active
+  {
+    if(glob_goto_target_position > glob_goto_start_position) // closing
+    {
+      if(moving_closing)
+      {
+        if(glob_position >= glob_goto_target_position)
+        {
+          glob_goto_target_position = -1;
+          Stop();
+        }
+      }
+    }
+    else // opening
+    {
+      if(moving_opening)
+      {
+        if(glob_position <= glob_goto_target_position)
+        {
+          glob_goto_target_position = -1;
+          Stop();
+        }
+      }
+    }
+  }
+  // End Position Monitoring
   
   if(test1)
   {
@@ -628,10 +694,6 @@ void T3() // 100ms
   {
     Knx.write(COMOBJ_debug2, in_current_smoothed);
   }
-
-
-
-  
 }
 
 unsigned short initcnt = 0;
@@ -865,12 +927,12 @@ void MoveToPosition(unsigned short knx_position)
 			Close();
 		}
 		//activate monitoring
-		glob_goto_position = knx_position;
+		glob_goto_target_position = knx_position;
+    glob_goto_start_position = glob_position;
 		
 
 		
 		//ToDo somewhere else:
-		// monitor if position is reached, Stop() and cancel monitoring
 		// cancel monitoring when new command comes in
 		// cancel monitoring when external command comes in
 		// dont cancel monitoring when direction was not correct
@@ -1009,31 +1071,4 @@ void ErrorCode(ErrorID errorid, unsigned short info, unsigned int data)
 	Knx.write(COMOBJ_error_code, sendvalue);
 }
 
-
-void reboot()
-{
-    Knx.end();
-
-#ifdef ESP8266 
-    DEBUG_PRINTLN(F("ESP8266 restart"));
-    ESP.restart();
-#elif __SAMD21G18A__
-    // do reset of arduino zero
-    setupWDT(0); // minimum period
-    while (1) {
-    }
-#elif __AVR_ATmega328P__
-    // to overcome WDT infinite reboot-loop issue
-    // see: https://github.com/arduino/Arduino/issues/4492
-    DEBUG_PRINTLN(F("software reset NOW"));
-    delay(500);
-    asm volatile ("  jmp 0");
-#else     
-    DEBUG_PRINTLN(F("WDT reset NOW"));
-    wdt_enable(WDTO_500MS);
-    while (1) {
-    }
-#endif    
-
-}
 
