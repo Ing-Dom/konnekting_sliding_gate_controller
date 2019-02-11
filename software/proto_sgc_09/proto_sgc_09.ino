@@ -108,22 +108,7 @@ bool glob_last_moving_direction = false;
 #define OPENING false
 #define CLOSING true
 
-enum ErrorID
-{
-  ERROR_Reserved = 0x00,
-  ERROR_ZCV_Invalid = 0x01,
-  ERROR_ZCV_New_written_to_EEPROM = 0x02,
-  ERROR_ZCV_New_Minor_change = 0x03,
-  ERROR_ZCV_New_EEPROM_Cooldown = 0x04
-};
 
-enum MoveState
-{
-  MOVESTATE_Reserved = 0x00,
-  MOVESTATE_OPEN = 0x01,
-  MOVESTATE_CLOSE = 0x02,
-  MOVESTATE_STOP = 0x03
-};
 
 
 // Start AutoClose
@@ -1070,5 +1055,3 @@ void ErrorCode(ErrorID errorid, unsigned short info, unsigned int data)
 	
 	Knx.write(COMOBJ_error_code, sendvalue);
 }
-
-
