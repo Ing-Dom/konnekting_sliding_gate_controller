@@ -25,10 +25,16 @@ Changelog 10:
 - cancel position monitoriung when knx command comes in
 
 Changelog 11:
+- OpenPart() in use
+- OpenCloseStop() in use
 
 
 ToDo:
-Barrier
+01 barrier evaluation and block commands
+02 params for some fixed values
+03 ErrorCodes
+04 Cancel Position Monitoring when external command comes in
+05 OpenPart: Check is OpenPart works from every state
 
 
 
@@ -139,9 +145,9 @@ unsigned int glob_last_command_valid = 0; // last command is valid when >0
 // End AutoClose
 
 // Start Position Detection
-#define POSITION_SEND_DISTANCE 13 // ca. 5%
+#define POSITION_SEND_DISTANCE 13 // ca. 5% // ToDo02
 double glob_position = -1; // 0 = opened, 255 = closed
-double glob_position_step100ms = 256.0 / 300; // ToDo make this a param
+double glob_position_step100ms = 256.0 / 300; // ToDo02 make this a param
 double glob_position_sent = -1;
 // End Position Detection
 
@@ -210,12 +216,13 @@ void knxEvents(byte index)
     {
       if (Knx.read(COMOBJ_cmd_partly_open))
       {
+        #ifdef KDEBUG
         Debug.println(F("Received 1 on COMOBJ_cmd_partly_open"));
+        #endif
 				glob_last_command = index;
 				glob_last_command_valid = GLOB_LAST_COMMAND_VALID_START;
         glob_goto_target_position = -1;
-        out_openpart_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
-				//ToDo: use OpenPart()
+        OpenPart();
       }
       break;
     }
@@ -287,7 +294,7 @@ void knxEvents(byte index)
         #ifdef KDEBUG
         Debug.println(F("Received 1 on COMOBJ_test3"));
         #endif
-        out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
+        OpenCloseStop();
       }
       break;
     }
@@ -588,7 +595,7 @@ void T3() // 100ms
       moving_closing = false;
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving, false);
-	  SendPosition();
+	    SendPosition();
     }
     else if(closing_cnt > param_drivecurrent_num)
     {
@@ -596,7 +603,8 @@ void T3() // 100ms
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving_direction, true);
       glob_last_moving_direction = CLOSING;
-	  SendPosition();
+	    SendPosition();
+     //ToDo04
     }
   }
   else if(moving_closing)
@@ -607,14 +615,14 @@ void T3() // 100ms
       moving_opening = true;
       Knx.write(COMOBJ_stat_moving_direction, false);
       glob_last_moving_direction = OPENING;
-	  SendPosition();
+	    SendPosition();
     }
     else if(stopped_cnt > param_drivecurrent_num)
     {
       moving_closing = false;
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving, false);
-	  SendPosition();
+	    SendPosition();
     }
   }
   else
@@ -626,7 +634,7 @@ void T3() // 100ms
       Knx.write(COMOBJ_stat_moving_direction, false);
       glob_last_moving_direction = OPENING;
       Knx.write(COMOBJ_stat_moving, true);
-	  SendPosition();
+	    SendPosition();
     }
     else if(closing_cnt > param_drivecurrent_num)
     {
@@ -873,12 +881,33 @@ void Open(bool leave_open)
 	}
 }
 
+void OpenPart()
+{
+    out_openpart_cnt = 500 / T1_CYCLETIME; // 20x 25ms = 500ms set OUT_OPENPART to 1 for 500ms
+}
+
 void Stop()
 {
   if(!in_closed && !in_opened && (moving_opening || moving_closing))
   {
     out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
   }
+}
+
+void OpenCloseStop()
+{
+  out_openclose_cnt = 20; // 20x 25ms = 500ms set OUT_OPENCLOSE to 1 for 500ms
+}
+
+
+
+bool CheckExternalCommand()
+{
+  // this function should be called when a change of the moving state has been detected
+  // it will return false if this change has been inititiated by the SGC, otherwise true
+
+  //ToDo04
+  return false;
 }
 
 
@@ -940,11 +969,6 @@ void MoveToPosition(unsigned short knx_position)
 		//activate monitoring
 		glob_goto_target_position = knx_position;
     glob_goto_start_position = glob_position;
-		
-
-		
-		//ToDo somewhere else:
-		// cancel monitoring when external command comes in
 	}		
 	return;
 }
