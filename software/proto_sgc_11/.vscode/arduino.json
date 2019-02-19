@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:micro",
+    "sketch": "proto_sgc_11.ino",
+    "output": "../build"
+}

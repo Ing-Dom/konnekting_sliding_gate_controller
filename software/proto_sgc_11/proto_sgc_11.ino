@@ -33,7 +33,7 @@ ToDo:
 01 barrier evaluation and block commands
 02 params for some fixed values
 03 ErrorCodes
-04 Cancel Position Monitoring when external command comes in
+04 Cancel Position Monitoring when external command comes in (dont detect external command when its a internal command (knx already done))
 05 OpenPart: Check is OpenPart works from every state
 
 
@@ -596,6 +596,9 @@ void T3() // 100ms
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving, false);
 	    SendPosition();
+      if(!glob_last_command_valid) // detect external commands
+        ExternalCommandDetected();
+
     }
     else if(closing_cnt > param_drivecurrent_num)
     {
@@ -604,7 +607,8 @@ void T3() // 100ms
       Knx.write(COMOBJ_stat_moving_direction, true);
       glob_last_moving_direction = CLOSING;
 	    SendPosition();
-     //ToDo04
+      if(!glob_last_command_valid) // detect external commands
+        ExternalCommandDetected();
     }
   }
   else if(moving_closing)
@@ -616,6 +620,8 @@ void T3() // 100ms
       Knx.write(COMOBJ_stat_moving_direction, false);
       glob_last_moving_direction = OPENING;
 	    SendPosition();
+      if(!glob_last_command_valid) // detect external commands
+        ExternalCommandDetected();
     }
     else if(stopped_cnt > param_drivecurrent_num)
     {
@@ -623,6 +629,8 @@ void T3() // 100ms
       moving_opening = false;
       Knx.write(COMOBJ_stat_moving, false);
 	    SendPosition();
+      if(!glob_last_command_valid) // detect external commands
+        ExternalCommandDetected();
     }
   }
   else
@@ -635,6 +643,8 @@ void T3() // 100ms
       glob_last_moving_direction = OPENING;
       Knx.write(COMOBJ_stat_moving, true);
 	    SendPosition();
+      if(!glob_last_command_valid) // detect external commands
+        ExternalCommandDetected();
     }
     else if(closing_cnt > param_drivecurrent_num)
     {
@@ -643,7 +653,9 @@ void T3() // 100ms
       Knx.write(COMOBJ_stat_moving_direction, true);
       glob_last_moving_direction = CLOSING;
       Knx.write(COMOBJ_stat_moving, true);
-	  SendPosition();
+	    SendPosition();
+      if(!glob_last_command_valid) // detect external commands
+        ExternalCommandDetected();
     }
   } 
   
@@ -901,13 +913,10 @@ void OpenCloseStop()
 
 
 
-bool CheckExternalCommand()
+void ExternalCommandDetected()
 {
-  // this function should be called when a change of the moving state has been detected
-  // it will return false if this change has been inititiated by the SGC, otherwise true
-
   //ToDo04
-  return false;
+
 }
 
 
